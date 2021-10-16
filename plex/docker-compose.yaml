@@ -12,8 +12,8 @@ services:
       - /mnt/gfs/docker/plex:/config
       - /nfs/media/tv:/tv
       - /nfs/media/movies:/movies
-    ports:
-      - 32400:32400
+    #ports:
+      #- 32400:32400
     networks:
      - traefik-network_public
     deploy:
