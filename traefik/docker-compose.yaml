@@ -1,0 +1,69 @@
+version: '3.7'
+
+services:
+  traefik:
+    image: traefik:latest
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - traefik-network_public
+    ports:
+      - 80:80
+      - 443:443
+      - 10000:8080
+    secrets:
+      - cloudflare-api-key
+      - cloudflare-api-email
+    environment:
+      - CF_API_EMAIL_FILE=/run/secrets/cloudflare-api-email
+      - CF_API_KEY_FILE=/run/secrets/cloudflare-api-key
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /mnt/gfs/docker/traefik/acme.json:/acme.json
+      - /mnt/gfs/docker/traefik/traefik.log:/traefik.log
+    configs:
+      - source: traefik-v5
+        target: /traefik.yaml
+      - source: traefik_config-v3
+        target: /config.yml
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik-network_public"
+        - "traefik.http.routers.traefik.entrypoints=http"
+        - "traefik.http.routers.traefik.rule=Host(`traefik.crowlight.com`)"
+        - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
+        - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
+        - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
+        - "traefik.http.routers.traefik-secure.entrypoints=https"
+        - "traefik.http.routers.traefik-secure.rule=Host(`traefik.crowlight.com`)"
+        - "traefik.http.routers.traefik-secure.tls=true"
+        - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"
+        - "traefik.http.routers.traefik-secure.tls.domains[0].main=swarm.crowlight.com"
+        - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.swarm.crowlight.com"
+        
+        - "traefik.http.routers.traefik-secure.tls.domains[1].main=crowlight.com"
+        - "traefik.http.routers.traefik-secure.tls.domains[1].sans=*.crowlight.com"
+        
+        - "traefik.http.routers.traefik-secure.service=api@internal"
+        - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+      placement:
+        constraints:
+          - "node.role==manager"
+
+configs:
+  traefik-v5:
+    external: true
+  traefik_config-v3:
+    external: true
+
+secrets:
+  cloudflare-api-email:
+    external: true
+  cloudflare-api-key:
+    external: true
+
+networks:
+  traefik-network_public:
+    external: true
