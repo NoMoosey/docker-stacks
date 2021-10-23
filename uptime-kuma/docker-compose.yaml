@@ -21,6 +21,7 @@ services:
         - "traefik.http.routers.uptime-secure.service=uptime"
         - "traefik.http.services.uptime.loadbalancer.server.port=3001"
         - "traefik.docker.network=traefik-network_public"
+        - "webhook-test=success"
       placement:
         constraints:
           - "node.role!=manager"
