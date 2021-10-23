@@ -12,17 +12,17 @@ services:
       - /mnt/gfs/docker/plex:/config
       - /nfs/media/tv:/tv
       - /nfs/media/movies:/movies
-    #ports:
-      #- 32400:32400
+    ports:
+      - 32400:32400
     networks:
      - traefik-network_public
     deploy:
       labels:
         - "traefik.enable=true"
-        #- "traefik.http.routers.plexy.entrypoints=http"
-        #- "traefik.http.routers.plexy.rule=Host(`plexy.crowlight.com`)"
-        #- "traefik.http.middlewares.plexy-https-redirect.redirectscheme.scheme=https"
-        #- "traefik.http.routers.plexy.middlewares=default-headers@file,plexy-https-redirect"
+        - "traefik.http.routers.plexy.entrypoints=http"
+        - "traefik.http.routers.plexy.rule=Host(`plexy.crowlight.com`)"
+        - "traefik.http.middlewares.plexy-https-redirect.redirectscheme.scheme=https"
+        - "traefik.http.routers.plexy.middlewares=default-headers@file,plexy-https-redirect"
         - "traefik.http.routers.plexy-secure.entrypoints=https"
         - "traefik.http.routers.plexy-secure.rule=Host(`plexy.crowlight.com`)"
         - "traefik.http.routers.plexy-secure.tls=true"
@@ -33,8 +33,10 @@ services:
       placement:
         constraints:
           - "node.role!=manager"
-      restart_policy:
-        condition: none
+        preferences:
+          - spread: node.labels.heavy
+      #restart_policy:
+      #  condition: none
         
 networks:
   traefik-network_public:
