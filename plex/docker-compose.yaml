@@ -30,7 +30,6 @@ services:
         - "traefik.http.routers.plexy-secure.service=plexy"
         - "traefik.http.services.plexy.loadbalancer.server.port=32400"
         - "traefik.docker.network=traefik-network_public"
-        - "webhook-test=true"
       placement:
         constraints:
           - "node.role!=manager"
