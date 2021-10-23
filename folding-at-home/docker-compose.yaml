@@ -1,0 +1,53 @@
+version: "3.7"
+services:
+  folding:
+    image: lscr.io/linuxserver/foldingathome
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Toronto
+    volumes:
+      - folding-data:/config
+    configs:
+      - source: folding-config
+        target: /config/config.xml
+    ports:
+      - target: 7396
+        published: 7396
+        mode: ingress
+    networks:
+     - traefik-network_public
+    deploy:
+      placement:
+        constraints:
+          - "node.role != manager"
+          - "node.hostname == moose-swarm-worker-03"
+      resources:
+        limits:
+          cpus: "12.0"
+        reservations:
+          cpus: "12.0"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.folding.entrypoints=http"
+        - "traefik.http.routers.folding.rule=Host(`folding.crowlight.com`)"
+        - "traefik.http.middlewares.folding-https-redirect.redirectscheme.scheme=https"
+        - "traefik.http.routers.folding.middlewares=default-headers@file,folding-https-redirect"
+        - "traefik.http.routers.folding-secure.entrypoints=https"
+        - "traefik.http.routers.folding-secure.rule=Host(`folding.crowlight.com`)"
+        - "traefik.http.routers.folding-secure.tls=true"
+        - "traefik.http.routers.folding-secure.middlewares=default-headers@file"
+        - "traefik.http.routers.folding-secure.service=folding"
+        - "traefik.http.services.folding.loadbalancer.server.port=7396"
+        - "traefik.docker.network=traefik-network_public"
+      
+networks:
+  traefik-network_public:
+    external: true
+  
+volumes:
+  folding-data:
+
+configs:
+  folding-config:
+    external: true
