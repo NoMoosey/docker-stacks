@@ -3,7 +3,7 @@ services:
   uptime-kuma:
     image: louislam/uptime-kuma
     volumes:
-      - /mnt/gfs/docker/uptime-kuma/data:/app/data
+      - /mnt/gfs1/docker/uptime-kuma/data:/app/data
     ports:
       - 3001:3001
     networks:

@@ -20,8 +20,8 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /mnt/gfs/docker/traefik/acme.json:/acme.json
-      - /mnt/gfs/docker/traefik/traefik.log:/traefik.log
+      - /mnt/gfs1/docker/traefik/acme.json:/acme.json
+      - /mnt/gfs1/docker/traefik/traefik.log:/traefik.log
     configs:
       - source: traefik-v5
         target: /traefik.yaml

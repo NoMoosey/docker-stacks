@@ -9,7 +9,7 @@ services:
       - VERSION=latest
       #- PLEX_CLAIM=claim-6R1t2p8xHLz2mmnJeaFL
     volumes:
-      - /mnt/gfs/docker/plex:/config
+      - /mnt/gfs1/docker/plex:/config
       - /nfs/media/tv:/tv
       - /nfs/media/movies:/movies
     ports:

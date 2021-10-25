@@ -8,8 +8,8 @@ services:
       - PGID=1000
       - TZ=America/Toronto
     volumes:
-      - /mnt/gfs/docker/tat:/config
-      - "/mnt/gfs/docker/plex/Library/Application Support/Plex Media Server/Logs:/logs:ro"
+      - /mnt/gfs1/docker/tat:/config
+      - "/mnt/gfs1/docker/plex/Library/Application Support/Plex Media Server/Logs:/logs:ro"
     ports:
       - 8181:8181
     networks:

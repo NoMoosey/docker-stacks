@@ -8,7 +8,7 @@ services:
         published: 7070
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /mnt/gfs/docker/prometheus:/prometheus
+      - /mnt/gfs1/docker/prometheus:/prometheus
     configs:
       - source: prometheus-v2
         target: /etc/prometheus/prometheus.yml
@@ -19,7 +19,7 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - /mnt/gfs/docker/grafana:/var/lib/grafana
+      - /mnt/gfs1/docker/grafana:/var/lib/grafana
   cadvisor:
     image: gcr.io/google-containers/cadvisor
     command: -docker_only
