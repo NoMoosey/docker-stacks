@@ -1,0 +1,58 @@
+version: "3.6"
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:14.4.1-ce.0
+    ports:
+      - "2222:22"
+      - "8022:80"
+      #- "4432:443"
+    volumes:
+      - /mnt/gfs1/docker/gitlab/data:/var/opt/gitlab
+      - /mnt/gfs1/docker/gitlab/logs:/var/log/gitlab
+      - /mnt/gfs1/docker/gitlab/config:/etc/gitlab
+    environment:
+      GITLAB_OMNIBUS_CONFIG: "from_file('/omnibus_config.rb')"
+    configs:
+      - source: gitlab-config-v4
+        target: /omnibus_config.rb
+    secrets:
+      - gitlab_root_password
+    networks:
+      - traefik-network_public
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.gitlab.entrypoints=http"
+        - "traefik.http.routers.gitlab.rule=Host(`gitlab.crowlight.com`)"
+        - "traefik.http.middlewares.gitlab-https-redirect.redirectscheme.scheme=https"
+        - "traefik.http.routers.gitlab.middlewares=default-headers@file,gitlab-https-redirect"
+        - "traefik.http.routers.gitlab-secure.entrypoints=https"
+        - "traefik.http.routers.gitlab-secure.rule=Host(`gitlab.crowlight.com`)"
+        - "traefik.http.routers.gitlab-secure.tls=true"
+        - "traefik.http.routers.gitlab-secure.middlewares=default-headers@file"
+        - "traefik.http.routers.gitlab-secure.service=gitlab"
+        - "traefik.http.services.gitlab.loadbalancer.server.port=80"
+        - "traefik.docker.network=traefik-network_public"
+      placement:
+        constraints:
+          - "node.role!=manager"
+        preferences:
+          - spread: "node.hostname==moose-swarm-worker-03"
+      restart_policy:
+        condition: none
+  gitlab-runner:
+    image: gitlab/gitlab-runner:alpine
+    deploy:
+      replicas: 3
+      placement:
+        constraints:
+          - "node.role!= manager"
+configs:
+  gitlab-config-v4:
+    external: true
+secrets:
+  gitlab_root_password:
+    external: true
+networks:
+  traefik-network_public:
+    external: true
