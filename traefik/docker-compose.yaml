@@ -10,6 +10,7 @@ services:
     ports:
       - 80:80
       - 443:443
+      - 222:22
       - 10000:8080
     secrets:
       - cloudflare-api-key
