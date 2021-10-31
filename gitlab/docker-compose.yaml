@@ -36,7 +36,6 @@ services:
       placement:
         constraints:
           - "node.role!=manager"
-          - "node.hostname == moose-swarm-worker-03"
         preferences:
           - spread: "node.hostname==moose-swarm-worker-03"
       restart_policy:
