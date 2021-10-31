@@ -23,7 +23,7 @@ services:
       - /mnt/gfs1/docker/traefik/acme.json:/acme.json
       - /mnt/gfs1/docker/traefik/traefik.log:/traefik.log
     configs:
-      - source: traefik-v5
+      - source: traefik-v6
         target: /traefik.yaml
       - source: traefik_config-v3
         target: /config.yml
@@ -53,7 +53,7 @@ services:
           - "node.role==manager"
 
 configs:
-  traefik-v5:
+  traefik-v6:
     external: true
   traefik_config-v3:
     external: true
