@@ -10,7 +10,6 @@ services:
     ports:
       - 80:80
       - 443:443
-      - 222:22
       - 10000:8080
     secrets:
       - cloudflare-api-key
@@ -24,7 +23,7 @@ services:
       - /mnt/gfs1/docker/traefik/acme.json:/acme.json
       - /mnt/gfs1/docker/traefik/traefik.log:/traefik.log
     configs:
-      - source: traefik-v6
+      - source: traefik-v5
         target: /traefik.yaml
       - source: traefik_config-v3
         target: /config.yml
@@ -54,7 +53,7 @@ services:
           - "node.role==manager"
 
 configs:
-  traefik-v6:
+  traefik-v5:
     external: true
   traefik_config-v3:
     external: true
