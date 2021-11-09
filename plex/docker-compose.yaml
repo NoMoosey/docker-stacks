@@ -35,6 +35,9 @@ services:
           - "node.role!=manager"
         preferences:
           - spread: node.labels.heavy
+      resources:
+        limits:
+          memory: 10G
       #restart_policy:
       #  condition: none
         
