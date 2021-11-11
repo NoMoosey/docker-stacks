@@ -25,7 +25,7 @@ services:
     configs:
       - source: traefik-v5
         target: /traefik.yaml
-      - source: traefik_config-v3
+      - source: traefik_config-v4
         target: /config.yml
     deploy:
       labels:
@@ -55,7 +55,7 @@ services:
 configs:
   traefik-v5:
     external: true
-  traefik_config-v3:
+  traefik_config-v4:
     external: true
 
 secrets:
