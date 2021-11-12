@@ -1,7 +1,7 @@
 version: "3.6"
 services:
   gitlab:
-    entrypoint: bash -c 'sleep 99999'
+    entrypoint: "bash -c 'sleep 99999'"
     image: gitlab/gitlab-ce:14.4.1-ce.0
     ports:
       - "2222:22"
