@@ -23,7 +23,7 @@ services:
       - /mnt/gfs1/docker/traefik/acme.json:/acme.json
       - /mnt/gfs1/docker/traefik/traefik.log:/traefik.log
     configs:
-      - source: traefik-v6
+      - source: traefik-v7
         target: /traefik.yaml
       - source: traefik_config-v4
         target: /config.yml
