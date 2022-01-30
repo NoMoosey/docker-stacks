@@ -1,0 +1,46 @@
+---
+version: "3.7"
+services:
+  plex:
+    image: ghcr.io/linuxserver/plex
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - VERSION=latest
+      #- PLEX_CLAIM=claim-6R1t2p8xHLz2mmnJeaFL
+    volumes:
+      - /mnt/gfs1/docker/plex:/config
+      - /nfs/media/tv:/tv
+      - /nfs/media/movies:/movies
+    ports:
+      - 32400:32400
+    networks:
+     - traefik-network_public
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.plexy.entrypoints=http"
+        - "traefik.http.routers.plexy.rule=Host(`plexy.crowlight.com`)"
+        - "traefik.http.middlewares.plexy-https-redirect.redirectscheme.scheme=https"
+        - "traefik.http.routers.plexy.middlewares=default-headers@file,plexy-https-redirect"
+        - "traefik.http.routers.plexy-secure.entrypoints=https"
+        - "traefik.http.routers.plexy-secure.rule=Host(`plexy.crowlight.com`)"
+        - "traefik.http.routers.plexy-secure.tls=true"
+        - "traefik.http.routers.plexy-secure.middlewares=default-headers@file"
+        - "traefik.http.routers.plexy-secure.service=plexy"
+        - "traefik.http.services.plexy.loadbalancer.server.port=32400"
+        - "traefik.docker.network=traefik-network_public"
+      placement:
+        constraints:
+          - "node.role!=manager"
+        preferences:
+          - spread: node.labels.heavy
+      resources:
+        limits:
+          memory: 10G
+      #restart_policy:
+      #  condition: none
+        
+networks:
+  traefik-network_public:
+    external: true
