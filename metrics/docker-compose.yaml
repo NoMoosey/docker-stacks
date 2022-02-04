@@ -1,0 +1,36 @@
+---
+version: "3.7"
+services:
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor1
+    privileged: true
+    networks:
+      - traefik_traffic
+    ports:
+      - 10002:8080
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cadvisor.entrypoints=http"
+      - "traefik.http.routers.cadvisor.rule=Host(`cadvisor.crowlight.com`)"
+      - "traefik.http.middlewares.cadvisor-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.cadvisor.middlewares=cadvisor-https-redirect"
+      - "traefik.http.routers.cadvisor-secure.entrypoints=https"
+      - "traefik.http.routers.cadvisor-secure.rule=Host(`cadvisor.crowlight.com`)"
+      - "traefik.http.routers.cadvisor-secure.tls=true"
+      - "traefik.http.routers.cadvisor-secure.service=cadvisor"
+      - "traefik.http.services.cadvisor.loadbalancer.server.port=8080"
+      - "traefik.http.services.cadvisor.loadbalancer.server.scheme=http"
+      - "traefik.docker.network=traefik_traffic"
+
+networks:
+  traefik_traffic:
+    external: true
