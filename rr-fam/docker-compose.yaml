@@ -8,6 +8,7 @@ services:
       - TZ=America/Toronto
     volumes:
       - /mnt/gfs1/docker/sonarr/config:/config
+      - /nfs/lab/backups/sonarr:/config/Backups
       - /nfs/media/tv:/tv
       - /nfs/lab/media:/downloads
     networks:
@@ -35,6 +36,7 @@ services:
       - TZ=America/Toronto
     volumes:
       - /mnt/gfs1/docker/radarr/config:/config
+      - /nfs/lab/backups/radarr:/config/Backups
       - /nfs/media/movies:/movies
       - /nfs/lab/media:/downloads
     networks:
