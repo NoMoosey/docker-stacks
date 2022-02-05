@@ -77,7 +77,7 @@ services:
       - "traefik.http.routers.jackett-secure.rule=Host(`jackett.crowlight.com`)"
       - "traefik.http.routers.jackett-secure.tls=true"
       - "traefik.http.routers.jackett-secure.service=jackett"
-      - "traefik.http.services.jackett.loadbalancer.server.port=7878"
+      - "traefik.http.services.jackett.loadbalancer.server.port=9117"
       - "traefik.docker.network=traefik_traffic"
     
   sabnzbd:
@@ -105,7 +105,7 @@ services:
       - "traefik.http.routers.nzb-secure.rule=Host(`nzb.crowlight.com`)"
       - "traefik.http.routers.nzb-secure.tls=true"
       - "traefik.http.routers.nzb-secure.service=nzb"
-      - "traefik.http.services.nzb.loadbalancer.server.port=7878"
+      - "traefik.http.services.nzb.loadbalancer.server.port=8080"
       - "traefik.docker.network=traefik_traffic"
   ombi:
     image: lscr.io/linuxserver/ombi

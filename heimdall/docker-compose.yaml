@@ -12,6 +12,7 @@ services:
       - /home/moose/containers/heimdall:/config
     networks:
       - traefik_traffic
+    dns: 10.1.2.120
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.heimdall.entrypoints=http"
