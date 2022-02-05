@@ -1,0 +1,59 @@
+version: "3.7"
+services:
+  deluge:
+    image: lscr.io/linuxserver/deluge
+    container_name: deluge
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Toronto
+      - DELUGE_LOGLEVEL=error #optional
+    network_mode: "service:gluetun"
+    volumes:
+      - /mnt/gfs1/docker/deluge:/config
+      - /nfs/lab/media:/downloads
+    #ports:
+    #  - 8112:8112
+    #  - 6881:6881
+    #  - 6881:6881/udp
+    restart: unless-stopped
+    #labels:
+    #  - "traefik.enable=true"
+    #  - "traefik.http.routers.sonarr.entrypoints=http"
+    #  - "traefik.http.routers.sonarr.rule=Host(`deluge.crowlight.com`)"
+    #  - "traefik.http.middlewares.sonarr-https-redirect.redirectscheme.scheme=https"
+    #  - "traefik.http.routers.sonarr.middlewares=sonarr-https-redirect"
+    #  - "traefik.http.routers.sonarr-secure.entrypoints=https"
+    #  - "traefik.http.routers.sonarr-secure.rule=Host(`deluge.crowlight.com`)"
+    #  - "traefik.http.routers.sonarr-secure.tls=true"
+    #  - "traefik.http.routers.sonarr-secure.service=sonarr"
+    #  - "traefik.http.services.sonarr.loadbalancer.server.port=8112"
+    #  - "traefik.docker.network=traefik_traffic"
+      
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    #network: traefik_traffic
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 9999:8888/tcp # HTTP proxy
+      - 8388:8388/tcp # Shadowsocks
+      - 8388:8388/udp # Shadowsocks
+      - 8112:8112 # Below are pass through to deluge
+      - 6881:6881
+      - 6881:6881/udp
+    volumes:
+      - /mnt/gfs1/docker/gluetun:/gluetun
+    environment:
+      - VPNSP=nordvpn
+      - VPN_TYPE=openvpn
+      - OPENVPN_USER=${user}
+      - OPENVPN_PASSWORD=${pass}
+      # Timezone for accurate log times
+      - TZ=America/Toronto
+      - REGION=Canada
+
+networks:
+  traefik_traffic:
+    external: true
