@@ -12,6 +12,8 @@ services:
     environment:
       - CLOUDFLARE_API_KEY=${CF_API_KEY}
       - CLOUDFLARE_EMAIL=${CF_API_EMAIL}
+    command:
+      - --log.level=DEBUG
     restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -20,14 +22,15 @@ services:
       - /home/moose/containers/traefik/traefik.log:/traefik.log
       - /home/moose/containers/traefik/traefik.yml:/traefik.yaml
       - /home/moose/containers/traefik/config.yml:/config.yml
+      - /home/moose/traefik.env:/traefik.env
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik_traffic"
       - "traefik.http.routers.traefik.entrypoints=http"
       - "traefik.http.routers.traefik.rule=Host(`traefik.crowlight.com`)"
-      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
+      # - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
-      - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
+      # - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
       - "traefik.http.routers.traefik-secure.entrypoints=https"
       - "traefik.http.routers.traefik-secure.rule=Host(`traefik.crowlight.com`)"
       - "traefik.http.routers.traefik-secure.tls=true"
