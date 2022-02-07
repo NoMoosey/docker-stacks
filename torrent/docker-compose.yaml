@@ -29,6 +29,33 @@ services:
     #  - "traefik.http.routers.sonarr-secure.service=sonarr"
     #  - "traefik.http.services.sonarr.loadbalancer.server.port=8112"
     #  - "traefik.docker.network=traefik_traffic"
+    
+  jackett:
+    image: ghcr.io/linuxserver/jackett
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    volumes:
+      - /mnt/gfs1/docker/jackett/config:/config
+      - /nfs/lab/media:/downloads
+    network_mode: "service:gluetun"
+    #ports:
+    #  - 9117:9117
+    #networks:
+    #  - traefik_traffic
+    #labels:
+    #  - "traefik.enable=true"
+    #  - "traefik.http.routers.jackett.entrypoints=http"
+    #  - "traefik.http.routers.jackett.rule=Host(`jackett.crowlight.com`)"
+    #  - "traefik.http.middlewares.jackett-https-redirect.redirectscheme.scheme=https"
+    #  - "traefik.http.routers.jackett.middlewares=jackett-https-redirect"
+    #  - "traefik.http.routers.jackett-secure.entrypoints=https"
+    #  - "traefik.http.routers.jackett-secure.rule=Host(`jackett.crowlight.com`)"
+    #  - "traefik.http.routers.jackett-secure.tls=true"
+    #  - "traefik.http.routers.jackett-secure.service=jackett"
+    #  - "traefik.http.services.jackett.loadbalancer.server.port=9117"
+    #  - "traefik.docker.network=traefik_traffic"
       
   gluetun:
     image: qmcgaw/gluetun
@@ -43,6 +70,7 @@ services:
       - 8112:8112 # Below are pass through to deluge
       - 6881:6881
       - 6881:6881/udp
+      - 9117:9117 # Pass through to Jackett
     volumes:
       - /mnt/gfs1/docker/gluetun:/gluetun
     environment:
@@ -54,6 +82,6 @@ services:
       - TZ=America/Toronto
       - REGION=Canada
 
-networks:
-  traefik_traffic:
-    external: true
+#networks:
+#  traefik_traffic:
+#    external: true
