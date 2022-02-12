@@ -1,0 +1,39 @@
+version: '3.6'
+services:
+  web:
+    container_name: gitlab
+    image: 'gitlab/gitlab-ce:14.7.2-ce.0'
+    restart: always
+    hostname: 'gitlab.crowlight.com'
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://gitlab.crowlight.com'
+        # Add any other gitlab.rb configuration here, each on its own line
+        gitlab_rails['gitlab_shell_ssh_port'] = 222
+    ports:
+      - '8880:80'
+      - '4443:443'
+      - '222:22'
+    volumes:
+      - '/mnt/gfs1/docker/gitlab/config:/etc/gitlab'
+      - '/mnt/gfs1/docker/gitlab/logs:/var/log/gitlab'
+      - '/mnt/gfs1/docker/gitlab/data:/var/opt/gitlab'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_traffic"
+      - "traefik.http.routers.plexy.entrypoints=http"
+      - "traefik.http.routers.plexy.rule=Host(`gitlab.crowlight.com`)"
+      # - "traefik.http.middlewares.plexy-https-redirect.redirectscheme.scheme=https"
+      # - "traefik.http.rters.plexy.middlewares=default-headers@file,plexy-https-redirect"
+      - "traefik.http.routers.plexy-secure.entrypoints=https"
+      - "traefik.http.routers.plexy-secure.rule=Host(`gitlab.crowlight.com`)"
+      - "traefik.http.routers.plexy-secure.tls=true"
+      - "traefik.http.routers.plexy-secure.middlewares=default-headers@file"
+      - "traefik.http.routers.plexy-secure.service=plexy"
+      - "traefik.http.services.plexy.loadbalancer.server.port=8880"
+      
+    #shm_size: '256m'
+    
+networks:
+  traefik_traffic:
+    external: true
