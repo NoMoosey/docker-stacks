@@ -3,6 +3,7 @@ version: "3.7"
 services:
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
+    restart: always
     container_name: cadvisor1
     privileged: true
     networks:
@@ -30,6 +31,17 @@ services:
       - "traefik.http.services.cadvisor.loadbalancer.server.port=8080"
       - "traefik.http.services.cadvisor.loadbalancer.server.scheme=http"
       - "traefik.docker.network=traefik_traffic"
+      
+  prometheus:
+    image: prom/prometheus
+    restart: always
+    container_name: prometheus
+    #networks:
+    #  - traefik_traffic
+    ports:
+      - 9990:9090
+    volumes:
+      - /mnt/gfs1/docker/prometheus:/etc/prometheus
 
 networks:
   traefik_traffic:
