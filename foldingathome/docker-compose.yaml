@@ -1,0 +1,37 @@
+---
+version: "3.8"
+services:
+  foldingathome:
+    image: lscr.io/linuxserver/foldingathome
+    container_name: foldingathome
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Toronto
+    volumes:
+      - /mnt/gfs1/docker/folding/config:/config
+    networks:
+      - traefik_traffic
+    ports:
+      - 7396:7396
+      - 36330:36330 #optional
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.folding.entrypoints=http"
+      - "traefik.http.routers.folding.rule=Host(`folding.crowlight.com`)"
+      #- "traefik.http.middlewares.folding-https-redirect.redirectscheme.scheme=https"
+      #- "traefik.http.routers.folding.middlewares=folding-https-redirect"
+      - "traefik.http.routers.folding-secure.entrypoints=https"
+      - "traefik.http.routers.folding-secure.rule=Host(`folding.crowlight.com`)"
+      - "traefik.http.routers.folding-secure.tls=true"
+      - "traefik.http.routers.folding-secure.service=folding"
+      - "traefik.http.services.folding.loadbalancer.server.port=7396"
+      - "traefik.http.services.folding.loadbalancer.server.scheme=http"
+      - "traefik.docker.network=traefik_traffic"
+    cpu_shares: 512
+    cpus: 14.0
+    
+networks:
+  traefik_traffic:
+    external: true

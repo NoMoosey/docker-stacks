@@ -2,6 +2,7 @@ version: "3.7"
 services:
   sonarr:
     image: ghcr.io/linuxserver/sonarr
+    restart: always
     environment:
       - PUID=1000
       - PGID=1000
@@ -30,6 +31,7 @@ services:
     
   radarr:
     image: ghcr.io/linuxserver/radarr
+    restart: always
     environment:
       - PUID=1000
       - PGID=1000
@@ -58,6 +60,7 @@ services:
     
   sabnzbd:
     image: ghcr.io/linuxserver/sabnzbd
+    restart: always
     environment:
       - PUID=1000
       - PGID=1000
@@ -86,6 +89,7 @@ services:
       
   ombi:
     image: lscr.io/linuxserver/ombi
+    restart: always
     environment:
       - PUID=1000
       - PGID=1000

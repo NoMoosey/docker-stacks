@@ -1,0 +1,29 @@
+version: "3.7"
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma
+    container_name: uptime-kuma
+    restart: always
+    volumes:
+      - /mnt/gfs1/docker/uptime-kuma/data:/app/data
+    ports:
+      - 3001:3001
+    networks:
+     - traefik_traffic
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.uptime.entrypoints=http"
+      - "traefik.http.routers.uptime.rule=Host(`uptime.crowlight.com`)"
+      #- "traefik.http.middlewares.uptime-https-redirect.redirectscheme.scheme=https"
+      #- "traefik.http.routers.uptime.middlewares=uptime-https-redirect"
+      - "traefik.http.routers.uptime-secure.entrypoints=https"
+      - "traefik.http.routers.uptime-secure.rule=Host(`uptime.crowlight.com`)"
+      - "traefik.http.routers.uptime-secure.tls=true"
+      - "traefik.http.routers.uptime-secure.service=uptime"
+      - "traefik.http.services.uptime.loadbalancer.server.port=3001"
+      - "traefik.docker.network=traefik_traffic"
+      - "webhook-test=failedd"
+
+networks:
+  traefik_traffic:
+    external: true

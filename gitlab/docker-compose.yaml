@@ -5,8 +5,13 @@ services:
     image: 'gitlab/gitlab-ce:14.7.2-ce.0'
     restart: always
     hostname: 'gitlab.crowlight.com'
+    networks:
+      - traefik_traffic
+    dns: 10.1.2.120
     environment:
       GITLAB_OMNIBUS_CONFIG: |
+        nginx['listen_https'] = true
+        nginx['listen_port'] = 443
         external_url 'https://gitlab.crowlight.com'
         # Add any other gitlab.rb configuration here, each on its own line
         gitlab_rails['gitlab_shell_ssh_port'] = 222
@@ -21,19 +26,24 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik_traffic"
-      - "traefik.http.routers.plexy.entrypoints=http"
-      - "traefik.http.routers.plexy.rule=Host(`gitlab.crowlight.com`)"
+      - "traefik.http.routers.gitlab.entrypoints=http"
+      - "traefik.http.routers.gitlab.rule=Host(`gitlab.crowlight.com`)"
       # - "traefik.http.middlewares.plexy-https-redirect.redirectscheme.scheme=https"
       # - "traefik.http.rters.plexy.middlewares=default-headers@file,plexy-https-redirect"
-      - "traefik.http.routers.plexy-secure.entrypoints=https"
-      - "traefik.http.routers.plexy-secure.rule=Host(`gitlab.crowlight.com`)"
-      - "traefik.http.routers.plexy-secure.tls=true"
-      - "traefik.http.routers.plexy-secure.middlewares=default-headers@file"
-      - "traefik.http.routers.plexy-secure.service=plexy"
-      - "traefik.http.services.plexy.loadbalancer.server.port=8880"
-      
-    #shm_size: '256m'
-    
+      - "traefik.http.routers.gitlab-secure.entrypoints=https"
+      - "traefik.http.routers.gitlab-secure.rule=Host(`gitlab.crowlight.com`)"
+      - "traefik.http.routers.gitlab-secure.tls=true"
+      - "traefik.http.routers.gitlab-secure.middlewares=default-headers@file"
+      - "traefik.http.routers.gitlab-secure.service=gitlab"
+      - "traefik.http.services.gitlab.loadbalancer.server.port=443"
+      - "traefik.http.services.gitlab.loadbalancer.server.scheme=https"
+      - "traefik.tcp.routers.gitlab-ssh.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.gitlab-ssh.entrypoints=git-ssh"
+      - "traefik.tcp.routers.gitlab-ssh.service=gitlab-ssh-svc"
+      - "traefik.tcp.services.gitlab-ssh-svc.loadbalancer.server.port=22"
+
+    mem_limit: 8g
+
 networks:
   traefik_traffic:
     external: true
