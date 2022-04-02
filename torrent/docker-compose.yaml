@@ -16,7 +16,7 @@ services:
     #  - 8112:8112
     #  - 6881:6881
     #  - 6881:6881/udp
-    restart: unless-stopped
+    restart: always
     #labels:
     #  - "traefik.enable=true"
     #  - "traefik.http.routers.sonarr.entrypoints=http"
@@ -32,6 +32,7 @@ services:
     
   jackett:
     image: ghcr.io/linuxserver/jackett
+    restart: always
     environment:
       - PUID=1000
       - PGID=1000
@@ -60,6 +61,7 @@ services:
   gluetun:
     image: qmcgaw/gluetun
     container_name: gluetun
+    restart: always
     #network: traefik_traffic
     cap_add:
       - NET_ADMIN
@@ -73,15 +75,9 @@ services:
       - 9117:9117 # Pass through to Jackett
     volumes:
       - /mnt/gfs1/docker/gluetun:/gluetun
-    environment:
-      - VPNSP=nordvpn
-      - VPN_TYPE=openvpn
-      - OPENVPN_USER=${user}
-      - OPENVPN_PASSWORD=${pass}
-      # Timezone for accurate log times
-      - TZ=America/Toronto
-      - REGION=Canada
-
+    env_file:
+      - ~/configs/docker/torrent.env
+      
 #networks:
 #  traefik_traffic:
 #    external: true

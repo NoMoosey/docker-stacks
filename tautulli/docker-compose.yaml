@@ -1,0 +1,35 @@
+---
+version: "3.8"
+services:
+  tautulli:
+    image: lscr.io/linuxserver/tautulli
+    restart: always
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Toronto
+    volumes:
+      - /mnt/gfs1/docker/tat:/config
+      - "/mnt/gfs1/docker/plex/Library/Application Support/Plex Media Server/Logs:/logs:ro"
+    ports:
+      - 8181:8181
+    networks:
+      - traefik_traffic
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tat.entrypoints=http"
+      - "traefik.http.routers.tat.rule=Host(`tat.crowlight.com`)"
+      #- "traefik.http.middlewares.tat-https-redirect.redirectscheme.scheme=https"
+      #- "traefik.http.routers.tat.middlewares=folding-https-redirect"
+      - "traefik.http.routers.tat-secure.entrypoints=https"
+      - "traefik.http.routers.tat-secure.rule=Host(`tat.crowlight.com`)"
+      - "traefik.http.routers.tat-secure.tls=true"
+      - "traefik.http.routers.tat-secure.service=tat"
+      - "traefik.http.services.tat.loadbalancer.server.port=8181"
+      - "traefik.http.services.tat.loadbalancer.server.scheme=http"
+      - "traefik.docker.network=traefik_traffic"
+
+networks:
+  traefik_traffic:
+    external: true
+    

@@ -18,6 +18,10 @@ services:
       - /dev/disk/:/dev/disk:ro
     devices:
       - /dev/kmsg
+    command:
+
+      - "--housekeeping_interval=30s"
+      - "--docker_only=true"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.cadvisor.entrypoints=http"
@@ -31,18 +35,85 @@ services:
       - "traefik.http.services.cadvisor.loadbalancer.server.port=8080"
       - "traefik.http.services.cadvisor.loadbalancer.server.scheme=http"
       - "traefik.docker.network=traefik_traffic"
-      
+
   prometheus:
     image: prom/prometheus
     restart: always
     container_name: prometheus
-    #networks:
-    #  - traefik_traffic
+    networks:
+      - traefik_traffic
     ports:
       - 9990:9090
     volumes:
       - /mnt/gfs1/docker/prometheus:/etc/prometheus
+      - prometheus-storage:/prometheus
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prometheus.entrypoints=http"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.crowlight.com`)"
+      # - "traefik.http.middlewares.prometheus-https-redirect.redirectscheme.scheme=https"
+      # - "traefik.http.routers.prometheus.middlewares=prometheus-https-redirect"
+      - "traefik.http.routers.prometheus-secure.entrypoints=https"
+      - "traefik.http.routers.prometheus-secure.rule=Host(`prometheus.crowlight.com`)"
+      - "traefik.http.routers.prometheus-secure.tls=true"
+      - "traefik.http.routers.prometheus-secure.service=prometheus"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+      - "traefik.http.services.prometheus.loadbalancer.server.scheme=http"
+      - "traefik.docker.network=traefik_traffic"
+
+  grafana:
+    image: grafana/grafana-oss:latest-ubuntu
+    restart: always
+    container_name: grafana
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,natel-discrete-panel,grafana-piechart-panel
+    networks:
+      - traefik_traffic
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      #- /mnt/gfs1/docker/grafana/config:/etc/grafana
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.entrypoints=http"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.crowlight.com`)"
+      # - "traefik.http.middlewares.grafana-https-redirect.redirectscheme.scheme=https"
+      # - "traefik.http.routers.grafana.middlewares=grafana-https-redirect"
+      - "traefik.http.routers.grafana-secure.entrypoints=https"
+      - "traefik.http.routers.grafana-secure.rule=Host(`grafana.crowlight.com`)"
+      - "traefik.http.routers.grafana-secure.tls=true"
+      - "traefik.http.routers.grafana-secure.service=grafana"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+      - "traefik.http.services.grafana.loadbalancer.server.scheme=http"
+      - "traefik.docker.network=traefik_traffic"
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    command:
+      - '--path.rootfs=/host'
+    network_mode: host
+    ports:
+      - 9100:9100
+    pid: host
+    restart: always
+    volumes:
+      - '/:/host:ro,rslave'
+
+  unpoller:
+    image: golift/unifi-poller:latest
+    restart: always
+    ports:
+      - '9130:9130'
+    container_name: unpoller
+    env_file:
+      - ~/configs/docker/unpoller.env
 
 networks:
   traefik_traffic:
     external: true
+
+volumes:
+  grafana-storage:
+  prometheus-storage:

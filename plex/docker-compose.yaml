@@ -3,6 +3,7 @@ version: "3.7"
 services:
   plex:
     image: ghcr.io/linuxserver/plex
+    restart: always
     environment:
       - PUID=1000
       - PGID=1000
@@ -20,14 +21,16 @@ services:
       - "traefik.docker.network=traefik_traffic"
       - "traefik.http.routers.plexy.entrypoints=http"
       - "traefik.http.routers.plexy.rule=Host(`plexy.crowlight.com`)"
-      # - "traefik.http.middlewares.plexy-https-redirect.redirectscheme.scheme=https"
-      # - "traefik.http.routers.plexy.middlewares=default-headers@file,plexy-https-redirect"
+      #- "traefik.http.middlewares.plexy-https-redirect.redirectscheme.scheme=https"
+      #- "traefik.http.routers.plexy.middlewares=default-headers@file,plexy-https-redirect"
       - "traefik.http.routers.plexy-secure.entrypoints=https"
       - "traefik.http.routers.plexy-secure.rule=Host(`plexy.crowlight.com`)"
       - "traefik.http.routers.plexy-secure.tls=true"
       - "traefik.http.routers.plexy-secure.middlewares=default-headers@file"
       - "traefik.http.routers.plexy-secure.service=plexy"
       - "traefik.http.services.plexy.loadbalancer.server.port=32400"
+      
+    mem_limit: 8g
       
 networks:
   traefik_traffic:
