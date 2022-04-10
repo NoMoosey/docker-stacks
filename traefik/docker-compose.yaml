@@ -10,7 +10,7 @@ services:
     networks: 
       - traefik_traffic
     env_file:
-      - ~/configs/docker/traefik.env
+      - ~/configs/docker/traefik/traefik.env
     command:
       - --log.level=DEBUG
     restart: always
