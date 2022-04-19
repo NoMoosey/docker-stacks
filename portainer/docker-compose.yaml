@@ -5,7 +5,7 @@ services:
     image: portainer/portainer-ce:2.11.0
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
+      - /mnt/gfs1/docker/portainer:/data
     networks:
       - traefik_traffic
     ports:
@@ -25,9 +25,6 @@ services:
       - "traefik.http.services.portainer.loadbalancer.server.port=9443"
       - "traefik.http.services.portainer.loadbalancer.server.scheme=https"
       - "traefik.docker.network=traefik_traffic"
-
-volumes:
-  portainer_data:
 
 networks:
   traefik_traffic:

@@ -1,0 +1,38 @@
+---
+- name: Backup data used by docker
+  hosts: localhost
+  remote_user: moose
+  become_user: root
+
+  tasks:
+    - name: Find directories in the docker-stacks repo
+      find:
+        file_type: directory
+        path: ~/docker-stacks
+        recurse: no
+        excludes: 
+          - "swarm"
+          - "utilities"
+      register: stacks
+
+    - name: Stop docker stacks
+      community.docker.docker_compose:
+        state: absent
+        project_src: "{{ item.path }}"
+        remove_orphans: yes
+      loop: "{{ stacks.files }}"
+
+    - name: Copy all bind mount data to the backup location
+      archive:
+        format: tar
+        path: /mnt/gfs1
+        dest: /nfs/lab/backups/moose-one/moose-one-gfs.tar
+      become: yes
+
+    - name: Start docker stacks
+      community.docker.docker_compose:
+        state: present
+        pull: yes
+        project_src: "{{ item.path }}"
+        remove_orphans: yes
+      loop: "{{ stacks.files }}"
