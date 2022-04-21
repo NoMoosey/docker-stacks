@@ -19,7 +19,6 @@ services:
     devices:
       - /dev/kmsg
     command:
-
       - "--housekeeping_interval=30s"
       - "--docker_only=true"
     labels:
@@ -46,7 +45,7 @@ services:
       - 9990:9090
     volumes:
       - /mnt/gfs1/docker/prometheus:/etc/prometheus
-      - prometheus-storage:/prometheus
+      - /mnt/gfs1/docker/prometheus/data:/prometheus
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.prometheus.entrypoints=http"
@@ -72,7 +71,7 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - grafana-storage:/var/lib/grafana
+      - /mnt/gfs1/docker/grafana/data:/var/lib/grafana
       #- /mnt/gfs1/docker/grafana/config:/etc/grafana
     labels:
       - "traefik.enable=true"
@@ -113,7 +112,4 @@ services:
 networks:
   traefik_traffic:
     external: true
-
-volumes:
-  grafana-storage:
-  prometheus-storage:
+    
