@@ -107,7 +107,7 @@ services:
       - '9130:9130'
     container_name: unpoller
     env_file:
-      - ~/configs/docker/unpoller.env
+      - /home/moose/configs/docker/unpoller.env
 
 networks:
   traefik_traffic:
