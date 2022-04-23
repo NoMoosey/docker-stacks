@@ -10,19 +10,19 @@ services:
     networks: 
       - traefik_traffic
     env_file:
-      - ~/configs/docker/traefik/traefik.env
+      - /home/moose/configs/docker/traefik/traefik.env
     command:
       - --log.level=DEBUG
     restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /home/moose/containers/traefik/acme.json:/acme.json
-      - /home/moose/containers/traefik/traefik.log:/traefik.log
-      #- /home/moose/containers/traefik/access.log:/access.log
+      - /mnt/gfs1/docker/traefik/acme.json:/acme.json
+      - /mnt/gfs1/docker/traefik/traefik.log:/traefik.log
+      - /mnt/gfs1/docker/traefik/access.log:/access.log
       - /home/moose/configs/docker/traefik/traefik-config.yml:/traefik.yaml
       - /home/moose/configs/docker/traefik/traefik.yml:/config.yml
-      - /home/moose/traefik.env:/traefik.env
+      #- /home/moose/traefik.env:/traefik.env
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik_traffic"
