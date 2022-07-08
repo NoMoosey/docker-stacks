@@ -12,7 +12,7 @@ services:
     env_file:
       - /home/moose/configs/docker/traefik/traefik.env
     command:
-      - --log.level=DEBUG
+      - --log.level=INFO
     restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
