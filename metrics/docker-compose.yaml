@@ -39,12 +39,19 @@ services:
     image: prom/prometheus
     restart: always
     container_name: prometheus
+    command:
+      - '--storage.tsdb.retention.time=30d'
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
     networks:
       - traefik_traffic
     ports:
       - 9990:9090
     volumes:
-      - /mnt/gfs1/docker/prometheus:/etc/prometheus
+      - ~/configs/docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - /mnt/gfs1/docker/prometheus/data:/prometheus
     labels:
       - "traefik.enable=true"
@@ -108,6 +115,17 @@ services:
     container_name: unpoller
     env_file:
       - /home/moose/configs/docker/unpoller.env
+
+  pihole-exporter:
+    image: ekofr/pihole-exporter:latest
+    restart: always
+    ports:
+      - 9617:9617
+    environment:
+      - PIHOLE_HOSTNAME=10.1.2.120
+      - PIHOLE_PORT=8888
+      - PIHOLE_API_TOKEN=bcfa43dcde95550285c310f085c7642b1c654ed5af331f021f1cd4bcca355ee1
+      - PORT=9617
 
 networks:
   traefik_traffic:
