@@ -8,30 +8,32 @@ services:
       - PUID=1000
       - PGID=1000
       - VERSION=latest
+      - PLEX_CLAIM=claim-5wz6ecqATHU-vVft9X7R
     volumes:
       - /mnt/gfs1/docker/plex:/config
       - /nfs/media/tv:/tv
       - /nfs/media/movies:/movies
-    networks:
-      - traefik_traffic
-    ports:
-      - 32400:32400
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=traefik_traffic"
-      - "traefik.http.routers.plexy.entrypoints=http"
-      - "traefik.http.routers.plexy.rule=Host(`plexy.crowlight.com`)"
-      #- "traefik.http.middlewares.plexy-https-redirect.redirectscheme.scheme=https"
-      #- "traefik.http.routers.plexy.middlewares=default-headers@file,plexy-https-redirect"
-      - "traefik.http.routers.plexy-secure.entrypoints=https"
-      - "traefik.http.routers.plexy-secure.rule=Host(`plexy.crowlight.com`)"
-      - "traefik.http.routers.plexy-secure.tls=true"
-      - "traefik.http.routers.plexy-secure.middlewares=default-headers@file"
-      - "traefik.http.routers.plexy-secure.service=plexy"
-      - "traefik.http.services.plexy.loadbalancer.server.port=32400"
+    network_mode: host
+    #networks:
+    #  - traefik_traffic
+    #ports:
+    #  - 32400:32400
+    #labels:
+    #  - "traefik.enable=true"
+    #  - "traefik.docker.network=traefik_traffic"
+    #  - "traefik.http.routers.plexy.entrypoints=http"
+    #  - "traefik.http.routers.plexy.rule=Host(`plexy.crowlight.com`)"
+    #  #- "traefik.http.middlewares.plexy-https-redirect.redirectscheme.scheme=https"
+    #  #- "traefik.http.routers.plexy.middlewares=default-headers@file,plexy-https-redirect"
+    #  - "traefik.http.routers.plexy-secure.entrypoints=https"
+    #  - "traefik.http.routers.plexy-secure.rule=Host(`plexy.crowlight.com`)"
+    #  - "traefik.http.routers.plexy-secure.tls=true"
+    #  - "traefik.http.routers.plexy-secure.middlewares=default-headers@file"
+    #  - "traefik.http.routers.plexy-secure.service=plexy"
+    #  - "traefik.http.services.plexy.loadbalancer.server.port=32400"
       
     mem_limit: 8g
       
-networks:
-  traefik_traffic:
-    external: true
+    #networks:
+    #  traefik_traffic:
+    #    external: true
