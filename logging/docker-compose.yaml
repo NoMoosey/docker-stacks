@@ -1,0 +1,36 @@
+version: "3"
+
+networks:
+  loki:
+
+services:
+  loki:
+    image: grafana/loki:2.6.1
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - loki
+
+  fluentbit:
+    image: cr.fluentbit.io/fluent/fluent-bit:2.0
+    container_name: fluentbit
+    networks:
+      - loki
+    volumes:
+      - ./fluentbit:/fluent-bit/etc
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana_loki
+    user: "1000"
+    volumes:
+      - ./grafana:/var/lib/grafana
+    ports:
+      - "3333:3000"
+    restart: unless-stopped
+    networks:
+      - loki
+
+#tar -C /path/to/my/files -c -f- . | docker run --rm -i -v myapplicationdata:/data alpine tar -C /data -xv -f-
