@@ -87,32 +87,58 @@ services:
       - "traefik.http.services.nzb.loadbalancer.server.port=8080"
       - "traefik.docker.network=traefik_traffic"
       
-  ombi:
-    image: lscr.io/linuxserver/ombi
-    restart: always
+  # ombi:
+  #   image: lscr.io/linuxserver/ombi
+  #   restart: always
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=America/Toronto
+  #     #- BASE_URL=/ombi #optional
+  #   volumes:
+  #     - /mnt/gfs1/docker/ombi:/config
+  #   networks:
+  #     - traefik_traffic
+  #   ports:
+  #     - 3579:3579
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.ombi.entrypoints=http"
+  #     - "traefik.http.routers.ombi.rule=Host(`add.crowlight.com`)"
+  #     # - "traefik.http.middlewares.ombi-https-redirect.redirectscheme.scheme=https"
+  #     # - "traefik.http.routers.ombi.middlewares=default-headers@file,ombi-https-redirect"
+  #     - "traefik.http.routers.ombi-secure.entrypoints=https"
+  #     - "traefik.http.routers.ombi-secure.rule=Host(`add.crowlight.com`)"
+  #     - "traefik.http.routers.ombi-secure.tls=true"
+  #     - "traefik.http.routers.ombi-secure.middlewares=default-headers@file"
+  #     - "traefik.http.routers.ombi-secure.service=ombi"
+  #     - "traefik.http.services.ombi.loadbalancer.server.port=3579"
+  #     - "traefik.docker.network=traefik_traffic"
+
+
+  overseerr:
+    image: sctx/overseerr:latest
+    container_name: overseerr
     environment:
-      - PUID=1000
-      - PGID=1000
+      - LOG_LEVEL=debug
       - TZ=America/Toronto
-      #- BASE_URL=/ombi #optional
+      - PORT=5055 #optional
+    ports:
+      - 5055:5055
     volumes:
-      - /mnt/gfs1/docker/ombi:/config
+      - /mnt/gfs1/docker/overseerr:/app/config
+    restart: unless-stopped
     networks:
       - traefik_traffic
-    ports:
-      - 3579:3579
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.ombi.entrypoints=http"
-      - "traefik.http.routers.ombi.rule=Host(`add.crowlight.com`)"
-      # - "traefik.http.middlewares.ombi-https-redirect.redirectscheme.scheme=https"
-      # - "traefik.http.routers.ombi.middlewares=default-headers@file,ombi-https-redirect"
-      - "traefik.http.routers.ombi-secure.entrypoints=https"
-      - "traefik.http.routers.ombi-secure.rule=Host(`add.crowlight.com`)"
-      - "traefik.http.routers.ombi-secure.tls=true"
-      - "traefik.http.routers.ombi-secure.middlewares=default-headers@file"
-      - "traefik.http.routers.ombi-secure.service=ombi"
-      - "traefik.http.services.ombi.loadbalancer.server.port=3579"
+      - "traefik.http.routers.overseerr.entrypoints=http"
+      - "traefik.http.routers.overseerr.rule=Host(`request.crowlight.com`)"
+      - "traefik.http.routers.overseerr-secure.entrypoints=https"
+      - "traefik.http.routers.overseerr-secure.rule=Host(`request.crowlight.com`)"
+      - "traefik.http.routers.overseerr-secure.tls=true"
+      - "traefik.http.routers.overseerr-secure.service=overseerr"
+      - "traefik.http.services.overseerr.loadbalancer.server.port=5055"
       - "traefik.docker.network=traefik_traffic"
 
 networks:
