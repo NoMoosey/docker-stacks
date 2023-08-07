@@ -127,6 +127,13 @@ services:
       - PIHOLE_API_TOKEN=bcfa43dcde95550285c310f085c7642b1c654ed5af331f021f1cd4bcca355ee1
       - PORT=9617
 
+  influxdb:
+    image: influxdb:2.7.0
+    ports:
+      - 8086:8086
+    volumes:
+      - /mnt/gfs1/docker/influxdb:/var/lib/influxdb2
+
 networks:
   traefik_traffic:
     external: true
