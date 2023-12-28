@@ -8,7 +8,7 @@ services:
       - PUID=1000
       - PGID=1000
       - VERSION=latest
-      - PLEX_CLAIM=claim-5wz6ecqATHU-vVft9X7R
+      - PLEX_CLAIM=claim-dht4siKrQnmy6ce5mvBr
     volumes:
       - /mnt/gfs1/docker/plex:/config
       - /nfs/media/tv:/tv
