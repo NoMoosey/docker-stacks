@@ -141,6 +141,34 @@ services:
       - "traefik.http.services.overseerr.loadbalancer.server.port=5055"
       - "traefik.docker.network=traefik_traffic"
 
+  lazylibrarian:
+    image: lscr.io/linuxserver/lazylibrarian:latest
+    container_name: lazylibrarian
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Toronto
+      - DOCKER_MODS=linuxserver/mods:universal-calibre|linuxserver/mods:lazylibrarian-ffmpeg #optional
+    volumes:
+      - /mnt/gfs1/docker/lazylib/config:/config
+      - /nfs/lab/media:/downloads
+      - /nfs/media/books:/books #optional
+    ports:
+      - 5299:5299
+    restart: unless-stopped
+    networks:
+      - traefik_traffic
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.lazylib.entrypoints=http"
+      - "traefik.http.routers.lazylib.rule=Host(`library.crowlight.com`)"
+      - "traefik.http.routers.lazylib-secure.entrypoints=https"
+      - "traefik.http.routers.lazylib-secure.rule=Host(`library.crowlight.com`)"
+      - "traefik.http.routers.lazylib-secure.tls=true"
+      - "traefik.http.routers.lazylib-secure.service=lazylib"
+      - "traefik.http.services.lazylib.loadbalancer.server.port=5055"
+      - "traefik.docker.network=traefik_traffic"
+
 networks:
   traefik_traffic:
     external: true

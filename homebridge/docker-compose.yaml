@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   homebridge:
-    image: oznu/homebridge:latest
+    image: homebridge/homebridge:latest
     container_name: homebridge
     restart: always
     network_mode: host
